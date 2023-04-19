@@ -1,13 +1,23 @@
 import { chessPieces } from "./chessUtils";
 
 export const hash = (r, c) => {
-	return 2001*(r+1000)*(c+1000);
+	return 2001*(r+1000) + (c+1000);
 }
 
 export const getColor = (r,c,board) => {
 	if(!r)
-		return c%2 === 0? 1: 0;
-	return 1-board[r-1][c].color;
+		return c%2 === 0? 'white': 'grey';
+	return board[r-1][c].color === 'white'? 'grey': 'white';
+}
+
+export const resetBoardColors = (board) => {
+    for(let r = 0; r < 8; r++){
+        for(let c = 0; c < 8; c++){
+          let cell = document.getElementById(hash(r,c));
+          cell.style.backgroundColor = board[r][c].color;
+          cell.style.border = 'none';
+        }
+    }
 }
 
 export const getItemAt = (r,c) => {
@@ -146,11 +156,13 @@ export const possibleMoves = (r, c, piece, player, board) => {
                             directions.push(newMoveObject(new_row,new_col,false));
 
                             // Check for double step
-                            if(player === 'p1' && isSafe(new_row+1,new_col) && board[new_row+1][new_col].item.player === '-'){
-                                directions.push(newMoveObject(new_row+1,new_col,false));
-                            }
-                            else if(player === 'p2' && isSafe(new_row-1,new_col) && board[new_row-1][new_col].item.player === '-'){
-                                directions.push(newMoveObject(new_row-1,new_col,false));
+                            if(board[r][c].item.firstTime){
+                                if(player === 'p1' && isSafe(new_row+1,new_col) && board[new_row+1][new_col].item.player === '-'){
+                                    directions.push(newMoveObject(new_row+1,new_col,false));
+                                }
+                                else if(player === 'p2' && isSafe(new_row-1,new_col) && board[new_row-1][new_col].item.player === '-'){
+                                    directions.push(newMoveObject(new_row-1,new_col,false));
+                                }
                             }
                         }
                     }

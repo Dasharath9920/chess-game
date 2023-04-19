@@ -6,3 +6,8 @@ export const chessPieces = {
     'KING': 'king',
     'PAWN': 'pawn'
 }
+
+export const colorStatus = {
+    'colorSafe': 'rgb(167, 200, 144)',
+    'colorKill': 'rgb(217, 140, 140)'
+}
