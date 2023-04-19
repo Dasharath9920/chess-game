@@ -26,3 +26,12 @@
   align-items: center;
   justify-content: center;
 }
+
+.block img{
+  transition: .3s ease all;
+}
+
+.block:hover img{
+  transform: scale(1.1);
+  cursor: pointer;
+}
