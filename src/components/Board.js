@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { hash, possibleMoves, resetBoardColors, isCheckMate } from './helper';
+import { hash, possibleMoves, resetBoardColors, isCheckMate, isMovePossible } from './helper';
 import { chessPieces, colorStatus } from './chessUtils';
 import actionTypes from '../reducers/actionTypes';
 
@@ -12,6 +12,7 @@ function Board() {
 
   const takeAction = (block) => {
 	let activeBlock = myState.activeBlock;
+	let opponentPlayer = myState.turn === 'p1'? 'p2': 'p1';
 
 	// If any piece is killed, add them to the players lost pieces list
 	if(block.item?.piece !== '-'){
@@ -31,6 +32,19 @@ function Board() {
 			dispatch({
 				type: actionTypes.KILL_P1_PIECE,
 				p1_pieces: lostPieces
+			})
+		}
+
+		if(block.item.piece === chessPieces.KING){
+			dispatch({
+				type: actionTypes.CHECKMATE,
+				isCheckMate: true,
+				screenMessage: 'Game Over. Player' + myState.turn[1] + ' won the game.'
+			})
+
+			dispatch({
+				type: actionTypes.GAME_OVER,
+				gameOver: true
 			})
 		}
 	}
@@ -56,11 +70,16 @@ function Board() {
 	// Toggle the players turn
 	dispatch({
 		type: actionTypes.UPDATE_TURN,
-		turn: myState.turn === 'p1'? 'p2': 'p1'
+		turn: opponentPlayer
 	})
   }
 
   const showPossibleMoves = (block) => {
+	if(myState.gameOver){
+		return;
+	}
+
+	let opponentPlayer = myState.turn === 'p1'? 'p2': 'p1';
 	// If one of the possible moves block is selected, make a move
 	if([colorStatus.colorKill,colorStatus.colorSafe].includes(document.getElementById(block.key).style.backgroundColor)){
 		takeAction(block);
@@ -70,15 +89,31 @@ function Board() {
 		if(isCheck){
 			let cell = document.getElementById(hash(isCheck.r, isCheck.c));
 			cell.style.backgroundColor = colorStatus.colorKill;
+			
+			if(!isMovePossible(opponentPlayer,block,board)){
+				dispatch({
+					type: actionTypes.CHECKMATE,
+					isCheckMate: true,
+					screenMessage: 'Game Over. Player' + (myState.turn === 'p1'? '2': '1') + ' won the game.'
+				})
 
-			dispatch({
-				type: actionTypes.SCREEN_MESSAGE,
-				screenMessage: 'CheckMate to Player' + (myState.turn === 'p1'? '2': '1')
-			});
+				dispatch({
+					type: actionTypes.GAME_OVER,
+					gameOver: true
+				})
+			}
+			else{
+				dispatch({
+					type: actionTypes.CHECKMATE,
+					isCheckMate: true,
+					screenMessage: 'CheckMate to Player' + (myState.turn === 'p1'? '2': '1')
+				})
+			}
 		}
 		else{
 			dispatch({
-				type: actionTypes.SCREEN_MESSAGE,
+				type: actionTypes.CHECKMATE,
+				isCheckMate: false,
 				screenMessage: ''
 			});
 		}

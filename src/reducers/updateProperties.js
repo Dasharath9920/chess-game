@@ -8,7 +8,8 @@ const initializer = {
     p1_pieces: [],
     p2_pieces: [],
     screenMessage: '',
-    isCheckMate: false
+    isCheckMate: false,
+    gameOver: false,
 }
 
 const updateProperties = (state = initializer,action) => {
@@ -38,7 +39,11 @@ const updateProperties = (state = initializer,action) => {
         }
 
         case actionTypes.CHECKMATE: {
-            return {...state, isCheckMate: action.isCheckMate};
+            return {...state, isCheckMate: action.isCheckMate, screenMessage: action.screenMessage};
+        }
+
+        case actionTypes.GAME_OVER: {
+            return {...state, gameOver: action.gameOver};
         }
 
         default:

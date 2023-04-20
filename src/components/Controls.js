@@ -29,31 +29,28 @@ function Controls() {
           type: actionTypes.SCREEN_MESSAGE,
           screenMessage: ''
         })
+
+        dispatch({
+          type: actionTypes.GAME_OVER,
+          gameOver: false
+        })
     }
   }
-
+  
   useEffect(() => {
-    clearInterval(timer);
-
-    if(myState.screenMessage.length){
-      document.getElementById('mask').style.animation = 'none';
-      document.getElementById('screen').style.fontSize = '1.5rem';
-    }
-    else{
-      document.getElementById('mask').style.animation = 'animate 20s linear infinite';
-      document.getElementById('screen').style.fontSize = '1.3rem';
-
-      timer = setInterval(() => {
-        let newQuoteNumber = (quoteNumber + 1)%quotes.length;
-        setQuoteNumber(newQuoteNumber+1);
-      },20000);
-    }
-  },[myState.screenMessage]);
+    timer = setInterval(() => {
+      let newQuoteNumber = (quoteNumber + 1)%quotes.length;
+      setQuoteNumber(newQuoteNumber+1);
+    },20000);
+  })
 
   return (
     <div className='controls'>
         <button onClick={() => restartGame()}>Restart <img src="https://img.icons8.com/sf-black/64/null/recurring-appointment.png" alt="reset" /></button>
-        <div id="screen">{myState.screenMessage.length > 0? myState.screenMessage: quotes[quoteNumber]} <div id='mask'></div></div>
+        <div id="screen">
+          <div className='message'>{myState.screenMessage.length? myState.screenMessage: 'Chess Game'}</div>
+          <div id='mask'>{quotes[quoteNumber]}</div>
+        </div>
     </div>
   )
 }
