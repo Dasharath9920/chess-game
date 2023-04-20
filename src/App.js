@@ -4,6 +4,7 @@ import Board from './components/Board';
 import { useEffect } from 'react';
 import { hash, getColor, getItemAt } from './components/helper';
 import actionTypes from './reducers/actionTypes';
+import Player from './components/Player';
 
 function App() {
 
@@ -38,7 +39,9 @@ function App() {
 
   return (
     <div className="app">
+      <Player player='p1'/>
       <Board />
+      <Player player='p2'/>
     </div>
   );
 }

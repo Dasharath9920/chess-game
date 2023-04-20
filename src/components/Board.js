@@ -13,6 +13,28 @@ function Board() {
   const takeAction = (block) => {
 	let activeBlock = myState.activeBlock;
 
+	// If any piece is killed, add them to the players lost pieces list
+	if(block.item?.piece !== '-'){
+		if(myState.turn === 'p1'){
+			let lostPieces = myState.p2_pieces;
+			lostPieces.push(block.item.piece);
+
+			dispatch({
+				type: actionTypes.KILL_P2_PIECE,
+				p2_pieces: lostPieces
+			})
+		}
+		else{
+			let lostPieces = myState.p1_pieces;
+			lostPieces.push(block.item.piece);
+
+			dispatch({
+				type: actionTypes.KILL_P1_PIECE,
+				p1_pieces: lostPieces
+			})
+		}
+	}
+
 	// Copy source block to destination block and clear the source block
 	block.item = {...activeBlock.item};
 	activeBlock.item = {

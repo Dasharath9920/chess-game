@@ -2,14 +2,16 @@
   width: 100%;
   height: 100vh;
   display: flex;
-  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   background-color: rgb(100, 117, 133);
+  padding: 20px;
 }
 
 .board{
   height: 640px;
   width: 640px;
-  margin-top: 50px;
+  margin: 20px;
   background-color: grey;
   border-radius: 5px;
 }
@@ -34,4 +36,22 @@
 .block:hover img{
   transform: scale(1.1);
   cursor: pointer;
+}
+
+#player1, #player2{
+  width: 600px;
+  height: 100px;
+  background-color: rgb(138, 156, 150);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 5px;
+  border-radius: 5px;
+  border: 5px solid rgb(134, 197, 7);
+}
+
+.player-lost-pieces img{
+  margin: 5px 2px 2px 2px;
+  width: 25px;
+  height: 25px;
 }

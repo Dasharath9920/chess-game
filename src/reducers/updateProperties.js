@@ -4,7 +4,9 @@ const initializer = {
     turn: 'p1',
     board: [],
     activeBlock: {},
-    dummy: 'dummy'
+    dummy: 'dummy',
+    p1_pieces: [],
+    p2_pieces: []
 }
 
 const updateProperties = (state = initializer,action) => {
@@ -19,6 +21,14 @@ const updateProperties = (state = initializer,action) => {
 
         case actionTypes.ACTIVE_BLOCK: {
             return {...state, activeBlock: action.activeBlock};
+        }
+
+        case actionTypes.KILL_P1_PIECE: {
+            return {...state, p1_pieces: action.p1_pieces};
+        }
+
+        case actionTypes.KILL_P2_PIECE: {
+            return {...state, p2_pieces: action.p2_pieces};
         }
 
         default:
