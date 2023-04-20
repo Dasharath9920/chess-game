@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { hash, possibleMoves, resetBoardColors } from './helper';
+import { hash, possibleMoves, resetBoardColors, isCheckMate } from './helper';
 import { chessPieces, colorStatus } from './chessUtils';
 import actionTypes from '../reducers/actionTypes';
 
@@ -65,6 +65,23 @@ function Board() {
 	if([colorStatus.colorKill,colorStatus.colorSafe].includes(document.getElementById(block.key).style.backgroundColor)){
 		takeAction(block);
 		resetBoardColors(board);
+
+		let isCheck = isCheckMate(block, myState.turn, board);
+		if(isCheck){
+			let cell = document.getElementById(hash(isCheck.r, isCheck.c));
+			cell.style.backgroundColor = colorStatus.colorKill;
+
+			dispatch({
+				type: actionTypes.SCREEN_MESSAGE,
+				screenMessage: 'CheckMate to Player' + (myState.turn === 'p1'? '2': '1')
+			});
+		}
+		else{
+			dispatch({
+				type: actionTypes.SCREEN_MESSAGE,
+				screenMessage: ''
+			});
+		}
 		return;
 	}
 	else if(block.item.player === '-' || block === myState.activeBlock || block.item.player !== myState.turn){

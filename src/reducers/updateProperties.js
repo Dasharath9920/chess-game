@@ -6,7 +6,9 @@ const initializer = {
     activeBlock: {},
     dummy: 'dummy',
     p1_pieces: [],
-    p2_pieces: []
+    p2_pieces: [],
+    screenMessage: '',
+    isCheckMate: false
 }
 
 const updateProperties = (state = initializer,action) => {
@@ -29,6 +31,14 @@ const updateProperties = (state = initializer,action) => {
 
         case actionTypes.KILL_P2_PIECE: {
             return {...state, p2_pieces: action.p2_pieces};
+        }
+
+        case actionTypes.SCREEN_MESSAGE: {
+            return {...state, screenMessage: action.screenMessage};
+        }
+
+        case actionTypes.CHECKMATE: {
+            return {...state, isCheckMate: action.isCheckMate};
         }
 
         default:

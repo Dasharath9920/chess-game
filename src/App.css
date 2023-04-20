@@ -8,12 +8,33 @@
   padding: 20px;
 }
 
+.home{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
 .board{
   height: 640px;
   width: 640px;
   margin: 20px;
   background-color: grey;
   border-radius: 5px;
+}
+
+.controls{
+  position: absolute;
+  top: 190px;
+  right: -400px;
+  width: 400px;
+  height: 300px;
+  background-color: rgb(210, 210, 189);
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 .board-row{
@@ -41,7 +62,7 @@
 #player1, #player2{
   width: 600px;
   height: 100px;
-  background-color: rgb(138, 156, 150);
+  background-color: beige;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -54,4 +75,54 @@
   margin: 5px 2px 2px 2px;
   width: 25px;
   height: 25px;
+}
+
+.controls > button{
+  font-size: 1.3rem;
+  width: 150px;
+  height: 40px;
+}
+
+.controls > button > img{
+  width: 30px;
+  height: 30px;
+}
+
+#screen{
+  width: 100%;
+  height: 200px;
+  margin-top: 20px;
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  font-size: 1.3rem;
+  line-height: 2rem;
+  font-family: 'Courier New', Courier, monospace;
+  border: 5px solid rgb(182, 187, 125);
+  position: relative;
+}
+
+#mask{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  transition: 10s ease all;
+  animation: animate 20s linear infinite;
+}
+
+@keyframes animate{
+  0%{
+    height: 190px;
+  }
+
+  50%{
+    height: 0px;
+  }
+
+  100%{
+    height: 190px;
+  }
 }

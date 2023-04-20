@@ -17,7 +17,7 @@ function Player({player}) {
     if(player === myState.turn){
         let id = 'player' + player[1], id2 = 'player' + (player[1]==='1'? '2': '1');
         document.getElementById(id).style.border = '5px solid rgb(134, 197, 7)';
-        document.getElementById(id2).style.border = '5px solid rgb(138, 156, 150)';
+        document.getElementById(id2).style.border = '5px solid beige';
     }
   }, [myState.turn]);
 

@@ -1,5 +1,18 @@
 import { chessPieces } from "./chessUtils";
 
+export const quotes = [
+    'To live is the rarest thing in the world. Most people exist, that is all.',
+    'Live as if you were to die tomorrow. Learn as if you were to live forever.',
+    'It is better to be hated for what you are than to be loved for what you are not.',
+    'The way to get started is to quit talking and begin doing. -Walt Disney',
+    'The future belongs to those who believe in the beauty of their dreams. -Eleanor Roosevelt',
+    'The greatest glory in living lies not in never falling, but in rising every time we fall. -Nelson Mandela',
+    'Never let the fear of striking out keep you from playing the game. -Babe Ruth',
+    'The only impossible journey is the one you never begin. -Tony Robbins',
+    'I find that the harder I work, the more luck I seem to have. -Thomas Jefferson',
+    'Failure is an option here. If things are not failing, you are not innovating enough. - Elon Musk'
+]
+
 export const hash = (r, c) => {
 	return 2001*(r+1000) + (c+1000);
 }
@@ -244,4 +257,32 @@ export const possibleMoves = (r, c, piece, player, board) => {
             return directions;
         }
     }
+}
+
+export const resetBoard = () => {
+    let board = []
+
+    for(let r = 0; r < 8; r++){
+      let row = []
+      for(let c = 0; c < 8; c++){
+        row.push({
+          key: hash(r,c),
+          color: getColor(r,c,board),
+          item: getItemAt(r,c),
+          r,c
+        })
+      }
+      board.push(row)
+    }
+
+    return board;
+}
+
+export const isCheckMate = (block, player, board) => {
+    let moves = possibleMoves(block.r, block.c, block.item.piece, player, board);
+
+    return moves.find((move) => {
+        let itemAtMove = board[move.r][move.c].item;
+        return (itemAtMove.player !== '-' && itemAtMove.player !== player && itemAtMove.piece === chessPieces.KING);
+    })
 }
