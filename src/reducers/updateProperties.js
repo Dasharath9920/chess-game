@@ -8,7 +8,7 @@ const initializer = {
     p1_pieces: [],
     p2_pieces: [],
     screenMessage: '',
-    isCheckMate: false,
+    isCheckMate: {},
     gameOver: false,
 }
 

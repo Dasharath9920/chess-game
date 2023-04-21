@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { hash, possibleMoves, resetBoardColors, isCheckMate, isMovePossible } from './helper';
+import { possibleMoves, resetBoardColors, isCheckMate, isMovePossibleToBreakCheckmate, highLightBlock, isMovePossible, getKingPosition, anyMovePossible } from './helper';
 import { chessPieces, colorStatus } from './chessUtils';
 import actionTypes from '../reducers/actionTypes';
 
@@ -34,24 +34,11 @@ function Board() {
 				p1_pieces: lostPieces
 			})
 		}
-
-		if(block.item.piece === chessPieces.KING){
-			dispatch({
-				type: actionTypes.CHECKMATE,
-				isCheckMate: true,
-				screenMessage: 'Game Over. Player' + myState.turn[1] + ' won the game.'
-			})
-
-			dispatch({
-				type: actionTypes.GAME_OVER,
-				gameOver: true
-			})
-		}
 	}
 
 	// Copy source block to destination block and clear the source block
 	block.item = {...activeBlock.item};
-	activeBlock.item = {
+	board[activeBlock.r][activeBlock.c].item = {
 		'player': '-',
 		'piece': '-',
 		'image': '-'
@@ -72,6 +59,11 @@ function Board() {
 		type: actionTypes.UPDATE_TURN,
 		turn: opponentPlayer
 	})
+
+	dispatch({
+		type: actionTypes.ACTIVE_BLOCK,
+		activeBlock: {}
+	});
   }
 
   const showPossibleMoves = (block) => {
@@ -81,20 +73,31 @@ function Board() {
 
 	let opponentPlayer = myState.turn === 'p1'? 'p2': 'p1';
 	// If one of the possible moves block is selected, make a move
-	if([colorStatus.colorKill,colorStatus.colorSafe].includes(document.getElementById(block.key).style.backgroundColor)){
+	if([colorStatus.colorKill,colorStatus.colorSafe].includes(document.getElementById(block.key).style.backgroundColor) && block.item.player !== myState.turn){
+
+		if(!isMovePossible(myState.turn, myState.activeBlock, block, board)){
+			highLightBlock(getKingPosition(myState.turn, board),colorStatus.colorKill);
+			return;
+		}
+
 		takeAction(block);
 		resetBoardColors(board);
 
-		let isCheck = isCheckMate(block, myState.turn, board);
-		if(isCheck){
-			let cell = document.getElementById(hash(isCheck.r, isCheck.c));
-			cell.style.backgroundColor = colorStatus.colorKill;
+		// Check for a checkMate after this move
+		let isCheck = isCheckMate(myState.turn, board);
+		let isAnyMovePossible = anyMovePossible(opponentPlayer,board);
+
+		if(!isAnyMovePossible || isCheck){
+			if(isAnyMovePossible && isCheck){
+				highLightBlock(isCheck,colorStatus.colorKill);
+			}
 			
-			if(!isMovePossible(opponentPlayer,block,board)){
+			if(!isAnyMovePossible || !isMovePossibleToBreakCheckmate(opponentPlayer,block,board)){
+				let winner = !isAnyMovePossible? myState.turn[1]: (myState.turn === 'p1'? '2': '1');
 				dispatch({
 					type: actionTypes.CHECKMATE,
-					isCheckMate: true,
-					screenMessage: 'Game Over. Player' + (myState.turn === 'p1'? '2': '1') + ' won the game.'
+					isCheckMate: {},
+					screenMessage: 'Game Over. Player' + winner + ' won the game.'
 				})
 
 				dispatch({
@@ -105,7 +108,10 @@ function Board() {
 			else{
 				dispatch({
 					type: actionTypes.CHECKMATE,
-					isCheckMate: true,
+					isCheckMate: {
+						'checkMateBlock': block,
+						'kingPosition': isCheck
+					},
 					screenMessage: 'CheckMate to Player' + (myState.turn === 'p1'? '2': '1')
 				})
 			}
@@ -113,7 +119,7 @@ function Board() {
 		else{
 			dispatch({
 				type: actionTypes.CHECKMATE,
-				isCheckMate: false,
+				isCheckMate: {},
 				screenMessage: ''
 			});
 		}
@@ -134,9 +140,8 @@ function Board() {
 
 	// Color all possible moves with respected colors
 	moves.forEach((move) => {
-		let cell = document.getElementById(hash(move.r, move.c));
-		cell.style.backgroundColor = move.canKill? colorStatus.colorKill: colorStatus.colorSafe;
-		cell.style.border = '1px solid grey';
+		let color = move.canKill? colorStatus.colorKill: colorStatus.colorSafe;
+		highLightBlock(move,color,'1px solid grey');
 	})
 
 	dispatch({

@@ -13,16 +13,19 @@ export const quotes = [
     'Failure is an option here. If things are not failing, you are not innovating enough. - Elon Musk'
 ]
 
+// Returns unique hash key of two values
 export const hash = (r, c) => {
 	return 2001*(r+1000) + (c+1000);
 }
 
+// Returns the color of a cell in a chess board at given coordinates
 export const getColor = (r,c,board) => {
 	if(!r)
 		return c%2 === 0? 'white': 'grey';
 	return board[r-1][c].color === 'white'? 'grey': 'white';
 }
 
+// Function that resets the chess board colors
 export const resetBoardColors = (board) => {
     for(let r = 0; r < 8; r++){
         for(let c = 0; c < 8; c++){
@@ -33,6 +36,7 @@ export const resetBoardColors = (board) => {
     }
 }
 
+// Function that returns the actual chess piece and its properties at a given position at starting stage
 export const getItemAt = (r,c) => {
     let player = r < 2? 'p1': 'p2';
     let piecesInRow = [chessPieces.ROOK,chessPieces.KNIGHT,chessPieces.BISHOP,chessPieces.QUEEN,chessPieces.KING,chessPieces.BISHOP,chessPieces.KNIGHT,chessPieces.ROOK];
@@ -61,19 +65,7 @@ export const getItemAt = (r,c) => {
     }
 }
 
-export const mapCoordinatesToKey = () => {
-    let map = new Map();
-    for(let r = 0; r < 8; r++){
-        for(let c = 0; c < 8; c++){
-            let has = hash(r,c);
-            map.set(has,{
-                r,c
-            })
-        }
-    }
-    return map;
-}
-
+// Function that returns image of a chess piece of a particular player
 export const getPieceImage = (player, piece) => {
     if(player === 'p1'){
         switch(piece){
@@ -121,10 +113,12 @@ export const getPieceImage = (player, piece) => {
     }
 }
 
+// Check if coordinates are within chess board
 const isSafe = (r,c) => {
     return r >= 0 && c >= 0 && r < 8 && c < 8;
 }
 
+// Function that returns object
 const newMoveObject = (r,c,canKill) => {
     return {
         'r': r,
@@ -133,10 +127,15 @@ const newMoveObject = (r,c,canKill) => {
     };
 }
 
-const addNewMoveObjectForBishopOrRook = (r,c,k1,k2,board,directions, player, blockToIgnore) => {
+// A reusable function that adds all the possible moves of Bishop or Rook
+const addNewMoveObjectForBishopOrRook = (r,c,k1,k2,board,directions, player, obstacle) => {
     for(let i = 1; i <= 7; i++){
         let new_row = r + i*k1, new_col = c + i*k2;
-        if(isSafe(new_row,new_col) && (blockToIgnore.r !== new_row || blockToIgnore.c !== new_col)){
+        if(obstacle.r === new_row && obstacle.c === new_col){
+            break;
+        }
+
+        if(isSafe(new_row,new_col)){
             if(board[new_row][new_col].item.piece === '-'){
                 directions.push(newMoveObject(new_row,new_col,false));
             }
@@ -151,7 +150,8 @@ const addNewMoveObjectForBishopOrRook = (r,c,k1,k2,board,directions, player, blo
     }
 }
 
-export const possibleMoves = (r, c, piece, player, board, blockToIgnore = {'r': -1,'c': -1}) => {
+// Function that returns all the possible moves of a chess piece of a particular player
+export const possibleMoves = (r, c, piece, player, board, obstacle = {'r': -1,'c': -1}) => {
     let directions = [], new_row = 0,new_col = 0;
 
     switch(piece){
@@ -188,10 +188,10 @@ export const possibleMoves = (r, c, piece, player, board, blockToIgnore = {'r': 
         }
 
         case chessPieces.BISHOP: {
-            addNewMoveObjectForBishopOrRook(r,c,1,1,board,directions, player, blockToIgnore);
-            addNewMoveObjectForBishopOrRook(r,c,-1,-1,board,directions, player, blockToIgnore);
-            addNewMoveObjectForBishopOrRook(r,c,-1,1,board,directions, player, blockToIgnore);
-            addNewMoveObjectForBishopOrRook(r,c,1,-1,board,directions, player, blockToIgnore);
+            addNewMoveObjectForBishopOrRook(r,c,1,1,board,directions, player, obstacle);
+            addNewMoveObjectForBishopOrRook(r,c,-1,-1,board,directions, player, obstacle);
+            addNewMoveObjectForBishopOrRook(r,c,-1,1,board,directions, player, obstacle);
+            addNewMoveObjectForBishopOrRook(r,c,1,-1,board,directions, player, obstacle);
 
             return directions;
         }
@@ -239,18 +239,18 @@ export const possibleMoves = (r, c, piece, player, board, blockToIgnore = {'r': 
         }
 
         case chessPieces.ROOK: {
-            addNewMoveObjectForBishopOrRook(r,c,0,1,board,directions, player, blockToIgnore);
-            addNewMoveObjectForBishopOrRook(r,c,1,0,board,directions, player, blockToIgnore);
-            addNewMoveObjectForBishopOrRook(r,c,0,-1,board,directions, player, blockToIgnore);
-            addNewMoveObjectForBishopOrRook(r,c,-1,0,board,directions, player, blockToIgnore);
+            addNewMoveObjectForBishopOrRook(r,c,0,1,board,directions, player, obstacle);
+            addNewMoveObjectForBishopOrRook(r,c,1,0,board,directions, player, obstacle);
+            addNewMoveObjectForBishopOrRook(r,c,0,-1,board,directions, player, obstacle);
+            addNewMoveObjectForBishopOrRook(r,c,-1,0,board,directions, player, obstacle);
 
             return directions;
         }
 
         case chessPieces.QUEEN: {
-            let BishopMoves = possibleMoves(r,c,chessPieces.BISHOP, player, board, blockToIgnore);
+            let BishopMoves = possibleMoves(r,c,chessPieces.BISHOP, player, board, obstacle);
             directions.push(...BishopMoves);
-            let RookMoves = possibleMoves(r,c,chessPieces.ROOK, player, board, blockToIgnore);
+            let RookMoves = possibleMoves(r,c,chessPieces.ROOK, player, board, obstacle);
             directions.push(...RookMoves);
 
             return directions;
@@ -258,6 +258,7 @@ export const possibleMoves = (r, c, piece, player, board, blockToIgnore = {'r': 
     }
 }
 
+// Function that reset the chess board
 export const resetBoard = () => {
     let board = []
 
@@ -282,29 +283,44 @@ export const resetBoard = () => {
     return board;
 }
 
-export const isCheckMate = (block, player, board) => {
-    let moves = possibleMoves(block.r, block.c, block.item.piece, player, board);
-
-    return moves.find((move) => {
-        let itemAtMove = board[move.r][move.c].item;
-        return (itemAtMove.player !== '-' && itemAtMove.player !== player && itemAtMove.piece === chessPieces.KING);
-    })
-}
-
-// Function to check if this move could break the checkmate
-const canBreakCheckMate = (move, player, block, board) => {
-    if(block.item.piece === chessPieces.KNIGHT)
-        return false;
-    
-    let moves = possibleMoves(block.r, block.c, block.item.piece, player, board, move);
-    return moves.every(move => board[move.r][move.c].item.piece !== chessPieces.KING || board[move.r][move.c].item.player !== player);
-}
-
-// Function to check whether any move possible to prevent checkmate
-export const isMovePossible = (player, block, board) => {
+// Function that returns true if there is a checkmate from player
+export const isCheckMate = (player, board) => {
     for(let r = 0; r < 8; r++){
         for(let c = 0; c < 8; c++){
             let item = board[r][c].item;
+            if(item.player === player){
+                let moves = possibleMoves(r,c,item.piece, player, board);
+                let checkFrom = moves.find((move) => {
+                    let itemAtMove = board[move.r][move.c].item;
+                    return (itemAtMove.player !== '-' && itemAtMove.player !== player && itemAtMove.piece === chessPieces.KING);
+                })
+                if(checkFrom){
+                    return checkFrom;
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+// Function to check if the 'move' can break the path between checkMate piece and King of player
+const canBreakCheckMate = (move, player, block, board) => {
+	let opponentPlayer = player === 'p1'? 'p2': 'p1';
+    if(block.item.piece === chessPieces.KNIGHT)
+        return false;
+    
+    let moves = possibleMoves(block.r, block.c, block.item.piece, opponentPlayer, board, move);
+    return moves.every(currentMove => board[currentMove.r][currentMove.c].item.piece !== chessPieces.KING || board[move.r][move.c].item.player !== player);
+}
+
+// Function to check whether any move possible to prevent checkmate
+// Here player is the one who have to check for a possible move to avoid checkmate
+export const isMovePossibleToBreakCheckmate = (player, block, board) => {
+    for(let r = 0; r < 8; r++){
+        for(let c = 0; c < 8; c++){
+            let item = board[r][c].item;
+            // If chess piece belongs to opponent player
             if(item.player !== player && item.player !== '-'){
                 let moves = possibleMoves(r,c,item.piece,player,board);
                 for(let i = 0; i < moves.length; i++){
@@ -317,5 +333,98 @@ export const isMovePossible = (player, block, board) => {
         }
     }
 
+    return false;
+}
+
+// Function that returns the deep copy of the chess board
+export const deepCopyBoard = (board) => {
+    let copyBoard = [];
+    for(let i = 0; i < 8; i++){
+        let row = [];
+        for(let j = 0; j < 8; j++){
+            row.push({...board[i][j]});
+        }
+        copyBoard.push(row);
+    }
+
+    return copyBoard;
+}
+
+// Function that checks if current move possible without causing self checkMate
+export const isMovePossible = (player,sourceBlock,destinationBlock,board) => {
+    let opponentPlayer = player === 'p1'? 'p2': 'p1';
+    
+    // Make temporary move and check if this move results checkMate itself
+    let copyBoard = deepCopyBoard(board);
+    
+    copyBoard[destinationBlock.r][destinationBlock.c].item = copyBoard[sourceBlock.r][sourceBlock.c].item;
+    copyBoard[sourceBlock.r][sourceBlock.c].item = {
+        'player': '-',
+        'piece': '-',
+        'image': '-'
+    };
+    
+    let kingPosition = getKingPosition(player, copyBoard);
+
+    if(kingPosition.r !== -1){
+        return !Object.values(chessPieces).some((piece) => {
+            let moves = possibleMoves(kingPosition.r, kingPosition.c, piece, player, copyBoard);
+            for(let i = 0; i < moves.length; i++){
+                let move = moves[i];
+                let item = copyBoard[move.r][move.c].item;
+
+                if(item.player === opponentPlayer && piece === item.piece){
+                    return true;
+                }
+            }
+            return false;
+        })
+    }
+
+    return true;
+}
+
+// Function that highlights the given block with color and border
+export const highLightBlock = (block,color, border = 'none') => {
+    let cell = document.getElementById(hash(block.r,block.c));
+    cell.style.backgroundColor = color;
+    cell.style.border = border;
+}
+
+// Function that returns king position of a particular player
+export const getKingPosition = (player, board) => {
+    let position = {
+        'r': -1,
+        'c': -1
+    };
+
+    for(let r = 0; r < 8; r++){
+        for(let c = 0; c < 8; c++){
+            let item = board[r][c].item;
+            if(item.player === player && item.piece === chessPieces.KING){
+                return {
+                    r,c
+                }
+            }
+        }
+    }
+
+    return position;
+}
+
+// Function that checks if any move possible
+export const anyMovePossible = (player, board) => {
+    for(let r = 0; r < 8; r++){
+        for(let c = 0; c < 8; c++){
+            let item = board[r][c].item;
+            if(item.player === player){
+                let moves = possibleMoves(r,c,item.piece,player,board);
+                let possibleMove = moves.some(move => isMovePossible(player,board[r][c],move,board));
+                if(possibleMove){
+                    return true;
+                }
+            }
+        }
+    }
     return false;
 }

@@ -41,7 +41,7 @@ function Controls() {
     timer = setInterval(() => {
       let newQuoteNumber = (quoteNumber + 1)%quotes.length;
       setQuoteNumber(newQuoteNumber+1);
-    },20000);
+    },24000);
   })
 
   return (
