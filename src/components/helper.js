@@ -304,28 +304,19 @@ export const isCheckMate = (player, board) => {
     return null;
 }
 
-// Function to check if the 'move' can break the path between checkMate piece and King of player
-const canBreakCheckMate = (move, player, block, board) => {
-	let opponentPlayer = player === 'p1'? 'p2': 'p1';
-    if(block.item.piece === chessPieces.KNIGHT)
-        return false;
-    
-    let moves = possibleMoves(block.r, block.c, block.item.piece, opponentPlayer, board, move);
-    return moves.every(currentMove => board[currentMove.r][currentMove.c].item.piece !== chessPieces.KING || board[move.r][move.c].item.player !== player);
-}
-
 // Function to check whether any move possible to prevent checkmate
 // Here player is the one who have to check for a possible move to avoid checkmate
-export const isMovePossibleToBreakCheckmate = (player, block, board) => {
+export const isMovePossibleToBreakCheckmate = (player, board) => {
     for(let r = 0; r < 8; r++){
         for(let c = 0; c < 8; c++){
             let item = board[r][c].item;
+            let sourceBlock = {r,c}
             // If chess piece belongs to opponent player
             if(item.player !== player && item.player !== '-'){
                 let moves = possibleMoves(r,c,item.piece,player,board);
                 for(let i = 0; i < moves.length; i++){
                     let move = moves[i];
-                    if(board[move.r][move.c].item.piece === block.piece || canBreakCheckMate(move,player,block,board)){
+                    if(isMovePossible(player,sourceBlock,move,board)){
                         return true;
                     }
                 }

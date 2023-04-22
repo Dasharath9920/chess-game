@@ -34,6 +34,16 @@ function Controls() {
           type: actionTypes.GAME_OVER,
           gameOver: false
         })
+
+        dispatch({
+          type: actionTypes.KILL_P1_PIECE,
+          p1_pieces: []
+        })
+
+        dispatch({
+          type: actionTypes.KILL_P2_PIECE,
+          p2_pieces: []
+        })
     }
   }
   
@@ -42,7 +52,7 @@ function Controls() {
       let newQuoteNumber = (quoteNumber + 1)%quotes.length;
       setQuoteNumber(newQuoteNumber+1);
     },24000);
-  })
+  },[myState.dummy]);
 
   return (
     <div className='controls'>

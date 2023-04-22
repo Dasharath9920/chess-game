@@ -92,7 +92,7 @@ function Board() {
 				highLightBlock(isCheck,colorStatus.colorKill);
 			}
 			
-			if(!isAnyMovePossible || !isMovePossibleToBreakCheckmate(opponentPlayer,block,board)){
+			if(!isAnyMovePossible || !isMovePossibleToBreakCheckmate(opponentPlayer,board)){
 				let winner = !isAnyMovePossible? myState.turn[1]: (myState.turn === 'p1'? '2': '1');
 				dispatch({
 					type: actionTypes.CHECKMATE,

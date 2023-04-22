@@ -19,7 +19,7 @@ function Player({player}) {
         document.getElementById(id).style.border = '5px solid rgb(134, 197, 7)';
         document.getElementById(id2).style.border = '5px solid beige';
     }
-  }, [myState.turn]);
+  }, [myState.turn, myState.p1_pieces, myState.p2_pieces]);
 
   return (
     <div id={'player' + player[1]}>
