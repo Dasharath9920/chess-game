@@ -16,8 +16,8 @@
 }
 
 .board{
-  height: 640px;
-  width: 640px;
+  height: 560px;
+  width: 560px;
   margin: 20px;
   background-color: grey;
   border-radius: 5px;
@@ -42,8 +42,8 @@
 }
 
 .block{
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   background-color: antiquewhite;
   display: flex;
   align-items: center;
